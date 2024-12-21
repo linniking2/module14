@@ -16,6 +16,9 @@ public class NoteApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(NoteApplication.class, args);
+        SpringApplication.run(TestController.class, args);
+        SpringApplication.run(TestThymeleafController.class, args);
+        SpringApplication.run(NoteController.class, args);
     }
 
     @Override
