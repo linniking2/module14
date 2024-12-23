@@ -1,6 +1,7 @@
 package org.dev.module14;
 
 import org.dev.module14.Note;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -12,42 +13,35 @@ public class NoteService {
     private final Map<Long, Note> notes = new HashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
 
+    @Autowired
+    private NoteRepository noteRepository;
 
     public List<Note> listAll() {
-        return new ArrayList<>(notes.values());
+        return noteRepository.findAll();
     }
 
 
     public Note add(Note note) {
-        long id = idGenerator.getAndIncrement();
-        note.setId(id);
-        notes.put(id, note);
-        return note;
+        return noteRepository.save(note);
     }
 
 
     public void deleteById(long id) {
-        if (!notes.containsKey(id)) {
-            throw new NoSuchElementException("Note with ID " + id + " does not exist.");
-        }
-        notes.remove(id);
+        noteRepository.deleteById(id);
     }
 
 
     public void update(Note note) {
-        if (!notes.containsKey(note.getId())) {
-            throw new NoSuchElementException("Note with ID " + note.getId() + " does not exist.");
-        }
-        Note existingNote = notes.get(note.getId());
+        Note existingNote = noteRepository.findById(note.getId())
+                .orElseThrow(() -> new RuntimeException("Note not found"));
         existingNote.setTitle(note.getTitle());
         existingNote.setContent(note.getContent());
+        noteRepository.save(existingNote);
     }
 
 
     public Note getById(long id) {
-        if (!notes.containsKey(id)) {
-            throw new NoSuchElementException("Note with ID " + id + " does not exist.");
-        }
-        return notes.get(id);
+        return noteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Note not found"));
     }
 }
